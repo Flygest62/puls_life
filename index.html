@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Рука Помощи — Проект «Пульс жизни» | ДГУ × Динамо РД</title>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg: #060911;
+      --bg-grid: rgba(59, 130, 246, 0.04);
+      --surface: rgba(17, 24, 39, 0.78);
+      --surface-solid: #111827;
+      --surface-2: #192234;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(96, 165, 250, 0.4);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --red: #ff3b5c;
+      --red-soft: rgba(255, 59, 92, 0.14);
+      --blue: #2563eb;
+      --blue-glow: rgba(37, 99, 235, 0.35);
+      --cyan: #38bdf8;
+      --green: #10b981;
+      --green-soft: rgba(16, 185, 129, 0.14);
+      --amber: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(var(--bg-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px),
+        radial-gradient(circle at 15% 0%, rgba(37, 99, 235, 0.14), transparent 45%),
+        radial-gradient(circle at 85% 10%, rgba(255, 59, 92, 0.10), transparent 40%);
+      background-size: 32px 32px, 32px 32px, 100% 100%, 100% 100%;
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 90px;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(6, 9, 17, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+    }
+    .header-inner {
+      max-width: 1040px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo-box {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--red), #9f1239);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 20px rgba(255, 59, 92, 0.35);
+      font-weight: 900; font-size: 18px; color: #fff;
+    }
+    .brand-title { font-weight: 800; font-size: 16px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+    .tag-live {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      padding: 2px 6px; border-radius: 4px;
+      background: var(--red-soft); color: var(--red); border: 1px solid rgba(255, 59, 92, 0.3);
+    }
+    .brand-sub { font-size: 11px; color: var(--muted); }
+
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .mini-ecg {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .bpm-text { font-size: 12px; font-weight: 700; color: var(--green); font-variant-numeric: tabular-nums; }
+    .hearts-badge {
+      background: linear-gradient(135deg, rgba(255, 59, 92, 0.18), rgba(255, 59, 92, 0.06));
+      border: 1px solid rgba(255, 59, 92, 0.35);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #fda4af;
+      box-shadow: 0 0 15px rgba(255, 59, 92, 0.12);
+    }
+
+    /* Layout */
+    .container { max-width: 1040px; margin: 0 auto; padding: 22px 18px; }
+
+    /* Hero Strip */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(17, 24, 39, 0.9));
+      border: 1px solid rgba(96, 165, 250, 0.25);
+      border-radius: 18px;
+      padding: 18px 22px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .hero-stats { display: flex; gap: 20px; flex-wrap: wrap; }
+    .stat-box { border-left: 2px solid var(--blue); padding-left: 10px; }
+    .stat-val { font-size: 18px; font-weight: 800; color: #fff; }
+    .stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+
+    /* Tabs */
+    .nav-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      background: var(--surface-solid);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      margin-bottom: 22px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 11px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--blue), #1d4ed8);
+      color: #fff;
+      box-shadow: 0 4px 14px var(--blue-glow);
+    }
+    .section { display: none; }
+    .section.active { display: block; animation: slideUp 0.28s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Cards & Buttons */
+    .card {
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+    .card h2 { font-size: 19px; font-weight: 700; letter-spacing: -0.2px; }
+    .card p.desc { color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+    .badge-verified {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 600;
+      color: #34d399;
+      background: var(--green-soft);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 5px 11px;
+      border-radius: 999px;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--blue), #1d4ed8);
+      color: #fff;
+      border: none;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px var(--blue-glow); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-red { background: linear-gradient(135deg, var(--red), #be123c); box-shadow: 0 4px 14px rgba(255, 59, 92, 0.3); }
+    .btn-red:hover { box-shadow: 0 6px 20px rgba(255, 59, 92, 0.45); }
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: var(--text);
+      box-shadow: none;
+    }
+    .btn-outline:hover { border-color: var(--cyan); background: rgba(56, 189, 248, 0.06); box-shadow: none; }
+    .btn-sm { padding: 8px 13px; font-size: 12px; }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 14px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+
+    /* Scenario Cards */
+    .scenario-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .scenario-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+    .scenario-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--cyan);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    /* Simulator Monitor */
+    .sim-monitor {
+      background: #070b14;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .sim-monitor.danger { border-color: var(--red); box-shadow: inset 0 0 24px rgba(255, 59, 92, 0.18); }
+    .sim-monitor.stable { border-color: var(--green); box-shadow: inset 0 0 24px rgba(16, 185, 129, 0.14); }
+    .timer-pill {
+      font-variant-numeric: tabular-nums;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: var(--red-soft);
+      color: var(--red);
+      border: 1px solid rgba(255, 59, 92, 0.35);
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 15px 16px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .option-btn:hover { border-color: var(--cyan); background: rgba(56, 189, 248, 0.06); }
+    .option-idx {
+      width: 26px; height: 26px; border-radius: 7px;
+      background: rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+    .option-btn.correct { border-color: var(--green); background: var(--green-soft); }
+    .option-btn.correct .option-idx { background: var(--green); color: #052e16; }
+    .option-btn.wrong { border-color: var(--red); background: var(--red-soft); }
+    .option-btn.wrong .option-idx { background: var(--red); color: #fff; }
+
+    .feedback-box {
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      margin-top: 12px;
+      display: none;
+    }
+    .feedback-box.ok { display: block; background: var(--green-soft); border: 1px solid var(--green); color: #a7f3d0; }
+    .feedback-box.err { display: block; background: var(--red-soft); border: 1px solid var(--red); color: #fecaca; }
+
+    /* SVG Wheel */
+    .wheel-stage { display: flex; flex-direction: column; align-items: center; padding: 12px 0; }
+    .wheel-container { position: relative; width: 290px; height: 290px; display: flex; align-items: center; justify-content: center; }
+    .wheel-pointer {
+      position: absolute; top: -10px; z-index: 10;
+      width: 0; height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 24px solid var(--red);
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));
+    }
+    #wheelSvg {
+      width: 100%; height: 100%;
+      transition: transform 3.6s cubic-bezier(0.15, 0.85, 0.18, 1);
+      filter: drop-shadow(0 12px 24px rgba(0,0,0,0.5));
+    }
+
+    /* Smart Medkit Scanner */
+    .scanner-box {
+      position: relative;
+      background: #070b14;
+      border: 1px dashed rgba(56, 189, 248, 0.45);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      overflow: hidden;
+    }
+    .laser-line {
+      position: absolute;
+      left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--red), transparent);
+      box-shadow: 0 0 12px var(--red);
+      animation: scanMove 2.4s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes scanMove {
+      0%, 100% { top: 8%; opacity: 0.3; }
+      50% { top: 90%; opacity: 1; }
+    }
+
+    .med-item {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 13px 16px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+    .status-pill { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+    .st-ok { background: var(--green-soft); color: #34d399; border: 1px solid rgba(16,185,129,0.25); }
+    .st-warn { background: rgba(245, 158, 11, 0.14); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+    .st-exp { background: var(--red-soft); color: #fda4af; border: 1px solid rgba(255,59,92,0.25); }
+
+    input[type="text"], input[type="date"] {
+      background: #0b101d;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 13px;
+      border-radius: 10px;
+      font-size: 13px;
+      width: 100%;
+      outline: none;
+    }
+    input:focus { border-color: var(--cyan); }
+    .form-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 8px; margin-bottom: 14px; }
+
+    /* Toast */
+    .toast-wrap {
+      position: fixed; bottom: 20px; right: 20px; z-index: 100;
+      display: flex; flex-direction: column; gap: 8px; max-width: 340px;
+    }
+    .toast {
+      background: #111827;
+      border: 1px solid var(--cyan);
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+      animation: toastIn 0.25s ease;
+    }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+    canvas#certCanvas {
+      width: 100%; max-width: 600px;
+      border-radius: 12px; border: 1px solid var(--border);
+      margin-top: 14px; display: block;
+    }
+
+    @media (max-width: 640px) {
+      .form-row { grid-template-columns: 1fr; }
+      .nav-tabs { grid-template-columns: repeat(2, 1fr); }
+      .mini-ecg { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo-box">+</div>
+      <div>
+        <div class="brand-title">РУКА ПОМОЩИ <span class="tag-live">MVP 2026</span></div>
+        <div class="brand-sub">Экосистема «Пульс жизни» • ДГУ × Динамо РД</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="mini-ecg">
+        <canvas id="headerEcg" width="76" height="24"></canvas>
+        <span class="bpm-text" id="headerBpm">74 BPM</span>
+      </div>
+      <div class="hearts-badge">❤️ <span id="heartCount">120</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="hero-banner">
+    <div>
+      <div style="font-size:12px; color:var(--cyan); font-weight:700; text-transform:uppercase; letter-spacing:0.6px;">Проект Дагестан • Студенческая инициатива</div>
+      <div style="font-size:17px; font-weight:800; margin-top:2px;">Навыки спасения жизни и культура здоровья молодежи</div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-box">
+        <div class="stat-val">3 сценария</div>
+        <div class="stat-lbl">Мед. верификация</div>
+      </div>
+      <div class="stat-box" style="border-color: var(--red);">
+        <div class="stat-val">ДГУ × Динамо</div>
+        <div class="stat-lbl">Офлайн-площадки</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('sim', this)">🩺 Симулятор</button>
+    <button class="tab-btn" onclick="switchTab('wheel', this)">🎯 Профилактика</button>
+    <button class="tab-btn" onclick="switchTab('medkit', this)">💊 Умная аптечка</button>
+    <button class="tab-btn" onclick="switchTab('offline', this)">🏆 Актив и Мерч</button>
+  </div>
+
+  <!-- TAB 1: SIMULATOR -->
+  <div id="tab-sim" class="section active">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h2>Интерактивный тренажер первой помощи</h2>
+          <p class="desc" style="margin-bottom:0;">Принимай решения в условиях дефицита времени. Следи за пульсом пострадавшего и заработай сертификат «Спасатель».</p>
+        </div>
+        <span class="badge-verified">✓ Верифицировано мед. специалистом</span>
+      </div>
+
+      <div id="scenarioList" class="grid-3" style="margin-top:16px;"></div>
+
+      <div id="quizBox" style="display:none; margin-top: 14px;">
+        <div class="sim-monitor danger" id="simMonitor">
+          <div>
+            <div class="scenario-tag" id="quizTitle" style="margin-bottom:2px;">Сценарий</div>
+            <div style="font-size:13px; color:var(--muted);" id="quizStepInfo">Этап 1</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <canvas id="simEcgCanvas" width="140" height="36"></canvas>
+            <div style="text-align:right;">
+              <div id="simBpmDisplay" style="font-weight:800; font-size:15px; color:var(--red);">138 BPM</div>
+              <div style="font-size:10px; color:var(--muted);">ПУЛЬС ПАЦИЕНТА</div>
+            </div>
+            <div class="timer-pill" id="stepTimer">00:25</div>
+          </div>
+        </div>
+
+        <h3 id="quizQuestion" style="font-size:17px; margin-bottom:14px;"></h3>
+        <div id="quizOptions"></div>
+        <div id="quizFeedback" class="feedback-box"></div>
+        <div style="display:flex; gap:10px; margin-top:14px;">
+          <button id="nextStepBtn" class="btn" style="display:none;" onclick="nextStep()">Следующий этап →</button>
+          <button class="btn btn-outline btn-sm" onclick="closeQuiz()">Выйти из симулятора</button>
+        </div>
+      </div>
+
+      <div id="certBox" style="display:none; margin-top: 16px; border-top: 1px solid var(--border); padding-top: 18px;">
+        <h3>🎉 Состояние стабилизировано! Получи сертификат «Спасатель»</h3>
+        <p class="desc">Начислено +50 ❤️. Введи ФИО участника (или члена жюри для демонстрации) и сгенерируй именной документ.</p>
+        <div style="display:flex; gap:8px; max-width:500px;">
+          <input type="text" id="certNameInput" placeholder="Магомедов Испай Магомедович" />
+          <button class="btn" onclick="renderCert()">Сформировать</button>
+        </div>
+        <canvas id="certCanvas" width="840" height="540"></canvas>
+        <div style="margin-top:12px; display:flex; gap:10px;">
+          <button class="btn btn-red btn-sm" onclick="downloadCert()">⬇ Скачать PNG-сертификат</button>
+          <button class="btn btn-outline btn-sm" onclick="closeQuiz()">К списку сценариев</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: WHEEL OF PREVENTION -->
+  <div id="tab-wheel" class="section">
+    <div class="card">
+      <h2>Колесо профилактики</h2>
+      <p class="desc">Ежедневные микропривычки для поддержания тонуса студентов и спортсменов. Крути барабан и забирай баллы «Сердце».</p>
+      <div class="wheel-stage">
+        <div class="wheel-container">
+          <div class="wheel-pointer"></div>
+          <svg id="wheelSvg" viewBox="0 0 300 300"></svg>
+        </div>
+        <button class="btn btn-red" style="margin-top:18px; padding:13px 26px; font-size:14px;" id="spinBtn" onclick="spinWheel()">Крутить колесо дня (+10 ❤️)</button>
+        <div id="wheelResult" class="feedback-box ok" style="max-width:480px; text-align:center; margin-top:16px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: SMART MEDKIT -->
+  <div id="tab-medkit" class="section">
+    <div class="card">
+      <h2>Умная домашняя аптечка</h2>
+      <p class="desc">Наведите камеру телефона на штрих-код упаковки (EAN-13) для автоопределения препарата или воспользуйтесь быстрым демо-режимом.</p>
+
+      <div class="scanner-box">
+        <div class="laser-line"></div>
+        <div>
+          <div style="font-size:12px; color:var(--cyan); font-weight:700;">ЖИВОЙ СКАНЕР ШТРИХ-КОДОВ (EAN-13)</div>
+          <div style="font-size:13px; color:var(--muted);">Автоопределение препарата из справочника + контроль срока годности</div>
+        </div>
+        <div style="display:flex; gap:8px; z-index:2; flex-wrap:wrap;">
+          <button class="btn btn-red btn-sm" id="realScanBtn" onclick="toggleRealScanner()">📷 Сканировать камерой</button>
+          <button class="btn btn-outline btn-sm" onclick="simulateBarcodeScan()">Тест-штрихкод (Демо)</button>
+        </div>
+      </div>
+
+      <div id="readerWrap" style="display:none; max-width:420px; margin: 0 auto 16px; border-radius:14px; overflow:hidden; border:1px solid var(--cyan);">
+        <div id="reader" style="width:100%;"></div>
+      </div>
+
+      <div class="form-row">
+        <input type="text" id="medName" placeholder="Название препарата (подставится после скана)" />
+        <input type="date" id="medExp" />
+        <button class="btn" onclick="addMed()">+ В аптечку</button>
+      </div>
+
+      <div id="medList"></div>
+
+      <div style="margin-top:18px; padding:14px 16px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid var(--border);">
+        <h3 style="font-size:14px; margin-bottom:6px; color:var(--cyan);">🛒 Автосписок для закупки в аптеке:</h3>
+        <div id="buyList" style="font-size:13px; color:var(--muted);">Все препараты в норме.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: OFFLINE & REWARDS -->
+  <div id="tab-offline" class="section">
+    <div class="card">
+      <h2>Офлайн-площадки (ДГУ × Общество «Динамо» РД)</h2>
+      <p class="desc">Регистрируйся на еженедельные активности. На месте волонтер подтверждает участие по QR-коду и начисляет +30 ❤️.</p>
+      <div class="grid-2">
+        <div class="scenario-card">
+          <div>
+            <div class="scenario-tag">Каждую субботу • 09:00 • Стадион ДГУ</div>
+            <h3 style="font-size:16px; margin-bottom:6px;">Зарядка «Поделись энергией»</h3>
+            <p style="font-size:13px; color:var(--muted); margin-bottom:14px;">Утренняя разминка со спортсменами «Динамо» РД. Заряд бодрости и командный дух.</p>
+          </div>
+          <button class="btn btn-sm" onclick="registerEvent(this, 'Зарядка «Поделись энергией»')">Записаться на зарядку (+30 ❤️)</button>
+        </div>
+        <div class="scenario-card">
+          <div>
+            <div class="scenario-tag">Практикум • Главный корпус ДГУ</div>
+            <h3 style="font-size:16px; margin-bottom:6px;">Форум первой помощи и псих. поддержки</h3>
+            <p style="font-size:13px; color:var(--muted); margin-bottom:14px;">Отработка алгоритмов на манекенах с дипломированными медиками и волонтерами.</p>
+          </div>
+          <button class="btn btn-sm" onclick="registerEvent(this, 'Форум первой помощи')">Записаться на форум (+30 ❤️)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Магазин баллов «Сердце» (Партнерская программа)</h2>
+      <p class="desc">Обменивай заработанные баллы на фирменный мерч «Пульс жизни» и бонусы локальных партнеров Махачкалы.</p>
+      <div class="grid-3" id="rewardsGrid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+  // Toast system
+  function showToast(msg) {
+    const wrap = document.getElementById('toastWrap');
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = msg;
+    wrap.appendChild(el);
+    setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 3600);
+  }
+
+  // Hearts Balance
+  let hearts = parseInt(localStorage.getItem('pulse_hearts_v3') || '120', 10);
+  const heartEl = document.getElementById('heartCount');
+  function updateHearts(delta) {
+    hearts += delta;
+    localStorage.setItem('pulse_hearts_v3', hearts);
+    heartEl.textContent = hearts;
+  }
+  updateHearts(0);
+
+  // Live ECG Animation
+  let simBpm = 138;
+  let simState = 'danger';
+  function drawEcg(canvasId, color, speed, amplitude) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    let x = 0;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+
+    function step() {
+      ctx.fillStyle = 'rgba(7, 11, 20, 0.16)';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.beginPath();
+      const prevX = x;
+      const mid = h / 2;
+      let y = mid;
+      const phase = (x % 48);
+      if (phase > 16 && phase <= 20) y = mid - amplitude * 0.35;
+      else if (phase > 20 && phase <= 24) y = mid + amplitude * 0.9;
+      else if (phase > 24 && phase <= 28) y = mid - amplitude;
+      else if (phase > 28 && phase <= 32) y = mid + amplitude * 0.4;
+
+      ctx.moveTo(prevX, mid);
+      ctx.lineTo(x + speed, y);
+      ctx.strokeStyle = canvasId === 'simEcgCanvas'
+        ? (simState === 'stable' ? '#10b981' : '#ff3b5c')
+        : '#10b981';
+      ctx.stroke();
+
+      x += speed;
+      if (x >= w) x = 0;
+      requestAnimationFrame(step);
+    }
+    step();
+  }
+  drawEcg('headerEcg', '#10b981', 1.4, 8);
+  drawEcg('simEcgCanvas', '#ff3b5c', 2.2, 13);
+
+  // Navigation
+  function switchTab(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // Scenarios
+  const scenarios = [
+    {
+      id: 'faint',
+      tag: 'Сценарий 01 • Аудитория ДГУ',
+      title: 'Обморок на лекции',
+      desc: 'Одногруппник побледнел в душной аудитории и потерял сознание. Дыхание сохранено.',
+      steps: [
+        {
+          q: 'Одногруппник упал без сознания. Твое первое действие в первые 10 секунд?',
+          options: [
+            { text: 'Плеснуть холодной водой в лицо и похлопать по щекам', ok: false, why: 'Ошибка: резкие воздействия не восстанавливают кровоснабжение мозга.' },
+            { text: 'Окликнуть, аккуратно встряхнуть за плечи и проверить дыхание за 10 секунд', ok: true, why: 'Верно! Оцениваем реакцию и нормальное дыхание («вижу, слышу, ощущаю»).' },
+            { text: 'Сразу посадить на стул и дать попить воды', ok: false, why: 'Ошибка: в вертикальном положении отток крови от головы усилится.' }
+          ]
+        },
+        {
+          q: 'Дыхание есть, человек без сознания. Какое положение ему придать?',
+          options: [
+            { text: 'Уложить на спину и приподнять ноги на 30–40 см (подложить рюкзак)', ok: true, why: 'Верно! Приподнятые ноги усиливают приток крови к головному мозгу.' },
+            { text: 'Подложить свернутую куртку под голову как подушку', ok: false, why: 'Ошибка: подъем головы ухудшает кровоток и может перекрыть дыхательные пути.' }
+          ]
+        },
+        {
+          q: 'Что сделать в аудитории для стабилизации состояния?',
+          options: [
+            { text: 'Собрать студентов поближе, чтобы следить за пульсом', ok: false, why: 'Ошибка: толпа перекрывает доступ свежего воздуха.' },
+            { text: 'Расстегнуть тесный воротник/ремень и открыть окно', ok: true, why: 'Верно! Освобождаем грудную клетку и обеспечиваем приток кислорода.' }
+          ]
+        },
+        {
+          q: 'Прошло более 2 минут, сознание не вернулось. Ваши действия?',
+          options: [
+            { text: 'Перевести в устойчивое боковое положение и вызвать скорую (103 / 112)', ok: true, why: 'Верно! Боковое положение защищает от западения языка и аспирации.' },
+            { text: 'Подождать еще 10 минут до конца пары', ok: false, why: 'Ошибка: обморок более 1–2 минут — прямое показание для вызова скорой.' }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'heat',
+      tag: 'Сценарий 02 • Стадион «Динамо»',
+      title: 'Тепловой удар на тренировке',
+      desc: 'На уличной зарядке участнику стало плохо: головокружение, горячая кожа, частый пульс.',
+      steps: [
+        {
+          q: 'Участник жалуется на потемнение в глазах и жар. Первое действие?',
+          options: [
+            { text: 'Прекратить нагрузку и увести/перенести человека в тень или прохладу', ok: true, why: 'Верно! Убираем тепловую нагрузку и прекращаем физическую активность.' },
+            { text: 'Сказать медленно пройтись по стадиону, чтобы «раздышаться»', ok: false, why: 'Ошибка: движение на солнце усугубит перегрев до критического.' }
+          ]
+        },
+        {
+          q: 'Как правильно охладить пострадавшего?',
+          options: [
+            { text: 'Облить ледяной водой с головы до ног', ok: false, why: 'Ошибка: ледяная вода вызывает спазм сосудов кожи и тормозит теплоотдачу.' },
+            { text: 'Снять лишнюю одежду, обтереть прохладной водой, приложить холод к шее и подмышкам', ok: true, why: 'Верно! Охлаждение зон крупных сосудов безопасно снижает температуру тела.' }
+          ]
+        },
+        {
+          q: 'Человек в сознании и просит пить. Что дать?',
+          options: [
+            { text: 'Прохладную негазированную воду небольшими глотками', ok: true, why: 'Верно! Восполняем водный баланс без нагрузки на сердце.' },
+            { text: 'Холодный энергетик или сладкую газировку', ok: false, why: 'Ошибка: кофеин и сахар усиливают обезвоживание.' }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'choke',
+      tag: 'Сценарий 03 • Студенческая столовая',
+      title: 'Поперхнулся (обструкция)',
+      desc: 'Человек во время еды схватился за горло, не может говорить и кашлять.',
+      steps: [
+        {
+          q: 'Пострадавший стоит, молчит и синеет. Как действовать?',
+          options: [
+            { text: 'Сильно похлопать по спине, пока он стоит прямо', ok: false, why: 'Ошибка: при вертикальном положении тела предмет провалится глубже.' },
+            { text: 'Наклонить вперед и нанести 5 резких ударов основанием ладони между лопаток', ok: true, why: 'Верно! Наклон вперед использует силу тяжести для выталкивания предмета.' }
+          ]
+        },
+        {
+          q: 'Удары не помогли. Переходим к приему Геймлиха. Куда ставить кулак?',
+          options: [
+            { text: 'На верхнюю часть живота: между пупком и мечевидным отростком грудины', ok: true, why: 'Верно! Толчки внутрь и вверх поднимают диафрагму и выталкивают воздух.' },
+            { text: 'На нижнюю часть ребер сбоку', ok: false, why: 'Ошибка: риск перелома ребер и травмы внутренних органов.' }
+          ]
+        },
+        {
+          q: 'Что делать, если предмет не вышел с первого цикла?',
+          options: [
+            { text: 'Чередовать 5 ударов по спине и 5 брюшных толчков до выхода предмета (при потере сознания — 103 и СЛР)', ok: true, why: 'Верно! Чередование техник — мировой стандарт первой помощи.' },
+            { text: 'Дать запить водой, чтобы протолкнуть кусок', ok: false, why: 'Ошибка: дыхательные пути перекрыты, вода только усугубит ситуацию.' }
+          ]
+        }
+      ]
+    }
+  ];
+
+  let currentScenario = null;
+  let currentStepIdx = 0;
+  let timerInterval = null;
+  let timeLeft = 25;
+
+  function renderScenarioCards() {
+    document.getElementById('scenarioList').innerHTML = scenarios.map(s => `
+      <div class="scenario-card">
+        <div>
+          <div class="scenario-tag">${s.tag}</div>
+          <h3 style="font-size:16px; margin-bottom:6px;">${s.title}</h3>
+          <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">${s.desc}</p>
+        </div>
+        <button class="btn btn-sm" onclick="startScenario('${s.id}')">Запустить тренажер →</button>
+      </div>
+    `).join('');
+  }
+  renderScenarioCards();
+
+  function startTimer() {
+    clearInterval(timerInterval);
+    timeLeft = 25;
+    const el = document.getElementById('stepTimer');
+    el.textContent = '00:25';
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      el.textContent = `00:${timeLeft < 10 ? '0' + timeLeft : timeLeft}`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        showToast('Время на раздумье вышло! В экстренной ситуации важна скорость.');
+      }
+    }, 1000);
+  }
+
+  function startScenario(id) {
+    currentScenario = scenarios.find(s => s.id === id);
+    currentStepIdx = 0;
+    simState = 'danger';
+    simBpm = 138;
+    document.getElementById('simMonitor').className = 'sim-monitor danger';
+    document.getElementById('simBpmDisplay').style.color = 'var(--red)';
+    document.getElementById('simBpmDisplay').textContent = '138 BPM';
+
+    document.getElementById('scenarioList').style.display = 'none';
+    document.getElementById('certBox').style.display = 'none';
+    document.getElementById('quizBox').style.display = 'block';
+    document.getElementById('quizTitle').textContent = currentScenario.title;
+    renderStep();
+  }
+
+  function closeQuiz() {
+    clearInterval(timerInterval);
+    document.getElementById('quizBox').style.display = 'none';
+    document.getElementById('certBox').style.display = 'none';
+    document.getElementById('scenarioList').style.display = 'grid';
+  }
+
+  function renderStep() {
+    startTimer();
+    const step = currentScenario.steps[currentStepIdx];
+    document.getElementById('quizStepInfo').textContent = `Этап ${currentStepIdx + 1} из ${currentScenario.steps.length}`;
+    document.getElementById('quizQuestion').textContent = step.q;
+    const fb = document.getElementById('quizFeedback');
+    fb.className = 'feedback-box';
+    fb.style.display = 'none';
+    document.getElementById('nextStepBtn').style.display = 'none';
+
+    const letters = ['А', 'Б', 'В'];
+    document.getElementById('quizOptions').innerHTML = step.options.map((opt, idx) => `
+      <button class="option-btn" onclick="chooseOption(${idx}, this)">
+        <span class="option-idx">${letters[idx]}</span>
+        <span>${opt.text}</span>
+      </button>
+    `).join('');
+  }
+
+  function chooseOption(idx, btn) {
+    const step = currentScenario.steps[currentStepIdx];
+    const chosen = step.options[idx];
+    const fb = document.getElementById('quizFeedback');
+
+    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('correct', 'wrong'));
+    if (chosen.ok) {
+      clearInterval(timerInterval);
+      btn.classList.add('correct');
+      fb.className = 'feedback-box ok';
+      fb.textContent = chosen.why;
+      document.getElementById('nextStepBtn').style.display = 'inline-flex';
+      simBpm = Math.max(76, simBpm - 20);
+      document.getElementById('simBpmDisplay').textContent = simBpm + ' BPM';
+      if (simBpm <= 85) {
+        simState = 'stable';
+        document.getElementById('simMonitor').className = 'sim-monitor stable';
+        document.getElementById('simBpmDisplay').style.color = 'var(--green)';
+      }
+    } else {
+      btn.classList.add('wrong');
+      fb.className = 'feedback-box err';
+      fb.textContent = chosen.why;
+      simBpm = Math.min(165, simBpm + 10);
+      document.getElementById('simBpmDisplay').textContent = simBpm + ' BPM';
+    }
+  }
+
+  function nextStep() {
+    currentStepIdx++;
+    if (currentStepIdx < currentScenario.steps.length) {
+      renderStep();
+    } else {
+      updateHearts(50);
+      showToast('Сценарий пройден! Начислено +50 ❤️');
+      document.getElementById('quizBox').style.display = 'none';
+      document.getElementById('certBox').style.display = 'block';
+      renderCert();
+    }
+  }
+
+  // Premium Certificate Generator
+  function renderCert() {
+    const name = document.getElementById('certNameInput').value.trim() || 'Магомедов Испай Магомедович';
+    const canvas = document.getElementById('certCanvas');
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, '#090e1a');
+    grad.addColorStop(1, '#111c33');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.strokeStyle = '#2563eb';
+    ctx.lineWidth = 5;
+    ctx.strokeRect(22, 22, w - 44, h - 44);
+
+    ctx.strokeStyle = 'rgba(255, 59, 92, 0.65)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(34, 34, w - 68, h - 68);
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillText('ПРОЕКТ «ПУЛЬС ЖИЗНИ» • ПЛАТФОРМА «РУКА ПОМОЩИ»', 64, 78);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 38px sans-serif';
+    ctx.fillText('СЕРТИФИКАТ «СПАСАТЕЛЬ»', 64, 138);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '17px sans-serif';
+    ctx.fillText('Настоящим документом подтверждается, что', 64, 194);
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 28px sans-serif';
+    ctx.fillText(name, 64, 240);
+
+    ctx.fillStyle = '#cbd5e1';
+    ctx.font = '16px sans-serif';
+    ctx.fillText('успешно отработал(а) алгоритм доврачебной первой помощи по модулю:', 64, 292);
+
+    ctx.fillStyle = '#34d399';
+    ctx.font = 'bold 20px sans-serif';
+    ctx.fillText(`«${currentScenario ? currentScenario.title : 'Базовый курс первой помощи'}»`, 64, 326);
+
+    ctx.save();
+    ctx.translate(680, 410);
+    ctx.rotate(-0.18);
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(0, 0, 56, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = '#10b981';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('ВЕРИФИЦИРОВАНО', 0, -6);
+    ctx.fillText('ПУЛЬС ЖИЗНИ', 0, 10);
+    ctx.fillText('ДГУ × ДИНАМО', 0, 24);
+    ctx.restore();
+
+    ctx.fillStyle = '#64748b';
+    ctx.font = '13px sans-serif';
+    ctx.fillText('ID документа: #PZ-2026-0842 • Республика Дагестан, Махачкала', 64, 468);
+  }
+
+  function downloadCert() {
+    const link = document.createElement('a');
+    link.download = 'certificate_puls_zhizni.png';
+    link.href = document.getElementById('certCanvas').toDataURL();
+    link.click();
+    showToast('Сертификат сохранен в загрузки');
+  }
+
+  // SVG Wheel of Prevention
+  const wheelSlices = [
+    { label: 'Стакан воды', task: 'Выпей прямо сейчас 1 стакан чистой воды (+10 ❤️)', color: '#1e3a8a' },
+    { label: 'Разминка шеи', task: 'Сделай 2-минутную разминку шеи и плеч (+10 ❤️)', color: '#065f46' },
+    { label: 'Аптечка', task: 'Проверь срок годности 3 препаратов в аптечке (+10 ❤️)', color: '#881337' },
+    { label: '5000 шагов', task: 'Пройди 5 000 шагов на свежем воздухе сегодня (+10 ❤️)', color: '#1d4ed8' },
+    { label: 'Зарядка ДГУ', task: 'Запишись на субботнюю зарядку «Поделись энергией» (+10 ❤️)', color: '#047857' },
+    { label: 'Вызов 112', task: 'Повтори алгоритм вызова экстренных служб 112 (+10 ❤️)', color: '#9f1239' }
+  ];
+
+  function buildWheelSvg() {
+    const svg = document.getElementById('wheelSvg');
+    const cx = 150, cy = 150, r = 142;
+    const step = (2 * Math.PI) / wheelSlices.length;
+    let html = '';
+
+    wheelSlices.forEach((s, i) => {
+      const a1 = i * step - Math.PI / 2;
+      const a2 = (i + 1) * step - Math.PI / 2;
+      const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+      const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
+      const mid = (a1 + a2) / 2;
+      const tx = cx + (r * 0.62) * Math.cos(mid);
+      const ty = cy + (r * 0.62) * Math.sin(mid);
+      const deg = (mid * 180) / Math.PI;
+
+      html += `
+        <path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 0,1 ${x2},${y2} Z" fill="${s.color}" stroke="#0b0f17" stroke-width="2"/>
+        <text x="${tx}" y="${ty}" fill="#fff" font-size="11" font-weight="700" text-anchor="middle" dominant-baseline="middle" transform="rotate(${deg}, ${tx}, ${ty})">${s.label}</text>
+      `;
+    });
+    html += `<circle cx="${cx}" cy="${cy}" r="28" fill="#060911" stroke="#38bdf8" stroke-width="3"/>`;
+    html += `<text x="${cx}" y="${cy}" fill="#fff" font-size="10" font-weight="800" text-anchor="middle" dominant-baseline="middle">ПУЛЬС</text>`;
+    svg.innerHTML = html;
+  }
+  buildWheelSvg();
+
+  let wheelAngle = 0;
+  function spinWheel() {
+    const btn = document.getElementById('spinBtn');
+    btn.disabled = true;
+    const idx = Math.floor(Math.random() * wheelSlices.length);
+    const sliceDeg = 360 / wheelSlices.length;
+    const target = 1440 + (360 - idx * sliceDeg - sliceDeg / 2);
+    wheelAngle += target;
+    document.getElementById('wheelSvg').style.transform = `rotate(${wheelAngle}deg)`;
+
+    setTimeout(() => {
+      const res = document.getElementById('wheelResult');
+      res.style.display = 'block';
+      res.textContent = 'Задание дня: ' + wheelSlices[idx].task;
+      updateHearts(10);
+      showToast('Начислено +10 ❤️ за активность дня!');
+      btn.disabled = false;
+    }, 3700);
+  }
+
+  // Smart Medkit & Real Barcode Scanner
+  let meds = [
+    { name: 'Хлоргексидин 0.05% (антисептик)', exp: '2027-08-15' },
+    { name: 'Бинт стерильный марлевый 7×14', exp: '2026-12-10' },
+    { name: 'Парацетамол 500 мг', exp: '2026-09-10' }
+  ];
+
+  const barcodeDb = {
+    '4602824001124': 'Хлоргексидин 0.05% раствор 100 мл',
+    '4602824001018': 'Перекись водорода 3% 100 мл',
+    '4601669008435': 'Активированный уголь 250 мг №10',
+    '4607003240014': 'Бинт марлевый стерильный 7м × 14см',
+    '4602242000150': 'Цитрамон П таблетки №10',
+    '4601808011579': 'Парацетамол 500 мг №20',
+    '5000158067325': 'Нурофен Экспресс капсулы 200 мг',
+    '4607011631019': 'Мирамистин 0.01% 150 мл'
+  };
+
+  let html5QrCode = null;
+  let scannerActive = false;
+
+  async function toggleRealScanner() {
+    const wrap = document.getElementById('readerWrap');
+    const btn = document.getElementById('realScanBtn');
+
+    if (scannerActive && html5QrCode) {
+      await html5QrCode.stop();
+      wrap.style.display = 'none';
+      btn.textContent = '📷 Сканировать камерой';
+      scannerActive = false;
+      return;
+    }
+
+    wrap.style.display = 'block';
+    btn.textContent = '⏹ Остановить камеру';
+    scannerActive = true;
+
+    html5QrCode = new Html5Qrcode("reader");
+    try {
+      await html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 260, height: 120 } },
+        async (decodedText) => {
+          await html5QrCode.stop();
+          wrap.style.display = 'none';
+          btn.textContent = '📷 Сканировать камерой';
+          scannerActive = false;
+
+          const foundName = barcodeDb[decodedText] || `Препарат [EAN: ${decodedText}]`;
+          document.getElementById('medName').value = foundName;
+          const nextYear = new Date();
+          nextYear.setFullYear(nextYear.getFullYear() + 1);
+          document.getElementById('medExp').value = nextYear.toISOString().split('T')[0];
+
+          updateHearts(5);
+          showToast(`Штрих-код ${decodedText} считан! Проверьте дату и нажмите «+ В аптечку» (+5 ❤️)`);
+        }
+      );
+    } catch (err) {
+      wrap.style.display = 'none';
+      btn.textContent = '📷 Сканировать камерой';
+      scannerActive = false;
+      showToast('Камера требует HTTPS (GitHub Pages) и разрешения в браузере.');
+    }
+  }
+
+  function renderMeds() {
+    const today = new Date();
+    const listEl = document.getElementById('medList');
+    const toBuy = [];
+
+    listEl.innerHTML = meds.map((m, i) => {
+      const d = new Date(m.exp);
+      const diffDays = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
+      let cls = 'st-ok', label = 'Годен';
+      if (diffDays < 0) {
+        cls = 'st-exp'; label = 'Просрочен!'; toBuy.push(`${m.name} — заменить просроченный`);
+      } else if (diffDays <= 45) {
+        cls = 'st-warn'; label = `Истекает (${diffDays} дн.)`; toBuy.push(`${m.name} — скоро истечет`);
+      }
+      return `
+        <div class="med-item">
+          <div>
+            <div style="font-weight:600; font-size:14px;">${m.name}</div>
+            <div style="font-size:12px; color:var(--muted);">Срок годности до: ${m.exp}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="status-pill ${cls}">${label}</span>
+            <button class="btn btn-outline btn-sm" onclick="removeMed(${i})">✕</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('buyList').innerHTML = toBuy.length
+      ? toBuy.map(x => `• ${x}`).join('<br>')
+      : 'Все препараты в аптечке пригодны к использованию.';
+  }
+  renderMeds();
+
+  function addMed() {
+    const name = document.getElementById('medName').value.trim();
+    const exp = document.getElementById('medExp').value;
+    if (!name || !exp) { showToast('Укажите название и срок годности препарата'); return; }
+    meds.unshift({ name, exp });
+    document.getElementById('medName').value = '';
+    renderMeds();
+    showToast('Препарат добавлен в умную аптечку');
+  }
+
+  function removeMed(idx) {
+    meds.splice(idx, 1);
+    renderMeds();
+  }
+
+  function simulateBarcodeScan() {
+    const samples = [
+      { name: 'Перекись водорода 3% [EAN: 4602824001018]', exp: '2027-06-20' },
+      { name: 'Покрывало спасательное изотерм. [EAN: 4680019024110]', exp: '2029-01-01' },
+      { name: 'Пластырь бактерицидный набор [EAN: 4601669008435]', exp: '2026-11-30' }
+    ];
+    const pick = samples[Math.floor(Math.random() * samples.length)];
+    meds.unshift(pick);
+    updateHearts(5);
+    renderMeds();
+    showToast(`Тестовый штрих-код считан: ${pick.name} (+5 ❤️)`);
+  }
+
+  // Offline & Rewards
+  function registerEvent(btn, title) {
+    if (btn.disabled) return;
+    btn.disabled = true;
+    btn.textContent = '✓ Вы в списке участников';
+    updateHearts(30);
+    showToast(`Запись подтверждена: ${title} (+30 ❤️)`);
+  }
+
+  const rewards = [
+    { title: 'Фирменный силиконовый браслет «Пульс жизни»', cost: 100, partner: 'Мерч проекта' },
+    { title: 'Бесплатный кофе / смузи у партнера у ДГУ', cost: 150, partner: 'Кофейня-партнер' },
+    { title: 'Открытая тренировка со спортсменом «Динамо»', cost: 250, partner: 'Общество «Динамо» РД' }
+  ];
+
+  function renderRewards() {
+    document.getElementById('rewardsGrid').innerHTML = rewards.map((r, i) => `
+      <div class="scenario-card">
+        <div>
+          <div class="scenario-tag">${r.partner}</div>
+          <h3 style="font-size:15px; margin-bottom:6px;">${r.title}</h3>
+          <p style="font-size:14px; color:#fda4af; font-weight:800; margin-bottom:14px;">${r.cost} ❤️</p>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="redeemReward(${i})">Обменять баллы</button>
+      </div>
+    `).join('');
+  }
+  renderRewards();
+
+  function redeemReward(idx) {
+    const r = rewards[idx];
+    if (hearts < r.cost) {
+      showToast(`Не хватает баллов (нужно ${r.cost} ❤️). Пройдите симулятор!`);
+      return;
+    }
+    updateHearts(-r.cost);
+    showToast(`Купон оформлен: «${r.title}». Покажите экран волонтеру.`);
+  }
+</script>
+</body>
+</html>
